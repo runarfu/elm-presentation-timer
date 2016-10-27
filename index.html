@@ -8311,8 +8311,16 @@ var _elm_lang$html$Html_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
+var _runarfu$elm_presentation_timer$Types$Finished = {ctor: 'Finished'};
+var _runarfu$elm_presentation_timer$Types$Started = function (a) {
+	return {ctor: 'Started', _0: a};
+};
+var _runarfu$elm_presentation_timer$Types$NotStarted = {ctor: 'NotStarted'};
 var _runarfu$elm_presentation_timer$Types$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
+};
+var _runarfu$elm_presentation_timer$Types$Start = function (a) {
+	return {ctor: 'Start', _0: a};
 };
 var _runarfu$elm_presentation_timer$Views$formatSeconds = function (s) {
 	var zeroPad = function (n) {
@@ -8335,39 +8343,105 @@ var _runarfu$elm_presentation_timer$Views$formatSeconds = function (s) {
 			':',
 			zeroPad(seconds)));
 };
-var _runarfu$elm_presentation_timer$Views$view = function (model) {
-	var bgColor = (_elm_lang$core$Native_Utils.cmp(model, 0) > 0) ? 'green' : 'red';
+var _runarfu$elm_presentation_timer$Views$viewTime = F2(
+	function (seconds, bgColor) {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$style(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							{ctor: '_Tuple2', _0: 'font-size', _1: '50vh'},
+							{ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+							{ctor: '_Tuple2', _0: 'background-color', _1: bgColor},
+							{ctor: '_Tuple2', _0: 'height', _1: '100vh'}
+						]))
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(
+					_runarfu$elm_presentation_timer$Views$formatSeconds(seconds))
+				]));
+	});
+var _runarfu$elm_presentation_timer$Views$notStarted = function () {
+	var timeButton = function (minutes) {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$button,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Events$onClick(
+							_runarfu$elm_presentation_timer$Types$Start(minutes * 60))
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(minutes),
+								' minutes'))
+						]))
+				]));
+	};
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$style(
-				_elm_lang$core$Native_List.fromArray(
-					[
-						{ctor: '_Tuple2', _0: 'font-size', _1: '50vh'},
-						{ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
-						{ctor: '_Tuple2', _0: 'background-color', _1: bgColor},
-						{ctor: '_Tuple2', _0: 'height', _1: '100vh'}
-					]))
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(
-				_runarfu$elm_presentation_timer$Views$formatSeconds(model))
-			]));
+			[]),
+		A2(
+			_elm_lang$core$List$map,
+			timeButton,
+			_elm_lang$core$Native_List.fromArray(
+				[10, 15, 20, 25, 30, 35, 40, 45])));
+}();
+var _runarfu$elm_presentation_timer$Views$view = function (model) {
+	var _p0 = model;
+	switch (_p0.ctor) {
+		case 'NotStarted':
+			return _runarfu$elm_presentation_timer$Views$notStarted;
+		case 'Started':
+			return A2(_runarfu$elm_presentation_timer$Views$viewTime, _p0._0, 'green');
+		default:
+			return A2(_runarfu$elm_presentation_timer$Views$viewTime, 0, 'red');
+	}
 };
 var _runarfu$elm_presentation_timer$State$subscriptions = function (model) {
 	return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _runarfu$elm_presentation_timer$Types$Tick);
 };
+var _runarfu$elm_presentation_timer$State$updateSeconds = function (seconds) {
+	return (_elm_lang$core$Native_Utils.cmp(seconds, 0) > 0) ? _runarfu$elm_presentation_timer$Types$Started(seconds - 1) : _runarfu$elm_presentation_timer$Types$Finished;
+};
 var _runarfu$elm_presentation_timer$State$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		return {ctor: '_Tuple2', _0: model - 1, _1: _elm_lang$core$Platform_Cmd$none};
+		if (_p0.ctor === 'Start') {
+			return {
+				ctor: '_Tuple2',
+				_0: _runarfu$elm_presentation_timer$Types$Started(_p0._0),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			var _p1 = model;
+			if (_p1.ctor === 'Started') {
+				return {
+					ctor: '_Tuple2',
+					_0: _runarfu$elm_presentation_timer$State$updateSeconds(_p1._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		}
 	});
 var _runarfu$elm_presentation_timer$Main$main = {
 	main: _elm_lang$html$Html_App$program(
 		{
-			init: {ctor: '_Tuple2', _0: 600, _1: _elm_lang$core$Platform_Cmd$none},
+			init: {ctor: '_Tuple2', _0: _runarfu$elm_presentation_timer$Types$NotStarted, _1: _elm_lang$core$Platform_Cmd$none},
 			view: _runarfu$elm_presentation_timer$Views$view,
 			update: _runarfu$elm_presentation_timer$State$update,
 			subscriptions: _runarfu$elm_presentation_timer$State$subscriptions

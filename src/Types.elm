@@ -3,9 +3,16 @@ module Types exposing (..)
 import Time exposing (Time)
 
 
-type alias Model =
+type alias Seconds =
     Int
 
 
+type Model
+    = NotStarted
+    | Started Seconds
+    | Finished
+
+
 type Msg
-    = Tick Time
+    = Start Seconds
+    | Tick Time

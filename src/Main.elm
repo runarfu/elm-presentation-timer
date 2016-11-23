@@ -20,7 +20,7 @@ main =
 initModel : Model
 initModel =
     { timer =
-        { setTime = (15 * Time.second)
+        { setTime = (10 * Time.second)
         , startTime = Nothing
         }
     , currentTime = Nothing

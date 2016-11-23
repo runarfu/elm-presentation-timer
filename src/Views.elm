@@ -38,24 +38,34 @@ viewTime : Time.Time -> Html Msg
 viewTime time =
     Time.inSeconds time
         |> round
-        |> formatSeconds
-        |> text
-        |> List.Extra.singleton
-        |> div [ timeLeftStyle ]
+        |> (\s -> div [ timeLeftStyle s ] [ text (formatSeconds s) ])
 
 
-timeLeftStyle =
-    style
-        [ ( "font-size", "50vh" )
-        , ( "text-align", "center" )
-        , ( "background-color", "green" )
-        , ( "height", "100vh" )
-        ]
+timeLeftStyle n =
+    let
+        bgColor =
+            if n < 0 then
+                "red"
+            else
+                "green"
+    in
+        style
+            [ ( "font-size", "50vh" )
+            , ( "text-align", "center" )
+            , ( "background-color", bgColor )
+            , ( "height", "100vh" )
+            ]
 
 
 formatSeconds : Int -> String
 formatSeconds s =
     let
+        sign =
+            if s < 0 then
+                "-"
+            else
+                ""
+
         minutes =
             (abs s) // 60
 
@@ -65,4 +75,4 @@ formatSeconds s =
         zeroPad n =
             (String.padLeft 2 '0' (toString n))
     in
-        (zeroPad minutes) ++ ":" ++ (zeroPad seconds)
+        sign ++ (zeroPad minutes) ++ ":" ++ (zeroPad seconds)

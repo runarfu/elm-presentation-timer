@@ -1,13 +1,14 @@
 module Main exposing (..)
 
-import Html.App as App
+import Html
+import Types exposing (..)
 import Views exposing (..)
 import State exposing (..)
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-    App.program
+    Html.program
         { init = ( 600, Cmd.none )
         , view = view
         , update = update
